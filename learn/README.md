@@ -1,20 +1,34 @@
-# nanochat learning path
+# nanochat — The Book
 
-This folder contains a guided set of lessons to understand transformers, GPT, and this repo.
-Each lesson builds on the previous one. Start at 00 and go in order.
+A self-contained learning book that explains every component of the nanochat LLM training codebase, from tokenization through RLHF.
 
-Lessons
-- 00_intro.md
-- 01_transformers.md
-- 02_gpt_model.md
-- 03_tokenizer.md
-- 04_data_pipeline.md
-- 05_training_loop.md
-- 06_optimizer.md
-- 07_inference_engine.md
-- 08_evaluation.md
-- 09_chat_sft_rl.md
-- 10_run_and_modify.md
-- 11_quick_walkthrough.md
+## Reading
 
-Tip: Read the linked source files alongside each lesson and keep a scratchpad for notes.
+Open **[book.html](book.html)** in any browser. No server needed — it's a single self-contained file with KaTeX math and Mermaid diagrams loaded from CDN.
+
+## Chapters
+
+| # | Title | Key topic |
+|---|-------|-----------|
+| 1 | The Big Picture | Architecture overview, pipeline, scaling philosophy |
+| 2 | Transformer Basics | Self-attention, causal mask, multi-head, MLP |
+| 3 | The GPT Model | RoPE, GQA, value embeddings, sliding windows |
+| 4 | Tokenizer | BPE, special tokens, conversation rendering |
+| 5 | Dataset and Dataloader | Parquet shards, BOS-aligned packing |
+| 6 | Training Loop | Scaling laws, LR schedule, mixed precision |
+| 7 | Optimizer | AdamW, Muon, Newton-Schulz, parameter groups |
+| 8 | Inference Engine | KV cache, sampling, tool-use state machine |
+| 9 | Evaluation | BPB, CORE, ChatCORE, benchmarks |
+| 10 | Chat SFT and RL | SFT data mixture, REINFORCE, DAPO |
+| 11 | Running and Modifying | CLI reference, multi-GPU, troubleshooting |
+| 12 | End-to-End Walkthrough | Trace a token through the entire system |
+
+## Building
+
+Rebuild the book after editing chapters:
+
+```powershell
+pwsh learn/build-book.ps1
+```
+
+Chapters live in `learn/chapters/` as markdown files (`NN-slug.md`). The build script assembles them into `learn/book.html`.
