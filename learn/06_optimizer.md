@@ -65,10 +65,10 @@ $$
 
 ```mermaid
 flowchart TD
-  G["Gradient g_t"] --> M["Update momentum\nm = β₁·m + (1-β₁)·g"]
-  G --> V["Update variance\nv = β₂·v + (1-β₂)·g²"]
-  M --> BC["Bias correction\nm̂ = m/(1-β₁ᵗ)"]
-  V --> BC2["Bias correction\nv̂ = v/(1-β₂ᵗ)"]
+  G["Gradient g_t"] --> M["Update momentum\nm = beta₁·m + (1-beta₁)·g"]
+  G --> V["Update variance\nv = beta₂·v + (1-beta₂)·g²"]
+  M --> BC["Bias correction\nm̂ = m/(1-beta₁ᵗ)"]
+  V --> BC2["Bias correction\nv̂ = v/(1-beta₂ᵗ)"]
   BC --> Update["θ = θ - η·(m̂/√(v̂+ε) + λ·θ)"]
   BC2 --> Update
 
@@ -133,7 +133,7 @@ This is related to the matrix polar decomposition, which projects $G$ onto the s
 
 ```mermaid
 flowchart TD
-  G["Raw gradient G\n(same shape as weight matrix)"] --> Mom["1. Momentum\nG_smooth = β·G_smooth + (1-β)·G"]
+  G["Raw gradient G\n(same shape as weight matrix)"] --> Mom["1. Momentum\nG_smooth = beta·G_smooth + (1-beta)·G"]
   Mom --> PE["2. Polar Express\nOrthogonalize G_smooth\n(5 iterations)"]
   PE --> NM["3. NorMuon variance reduction\nNormalize per-neuron scales"]
   NM --> WD["4. Weight decay\nθ = (1-λ)·θ"]

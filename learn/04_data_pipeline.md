@@ -204,13 +204,13 @@ Once $B$ rows are packed, they become the training batch:
 flowchart TD
   subgraph Packing["Pack B rows"]
     R0["Row 0: [doc1][doc2][crop3] (T+1 tokens)"]
-    R1["Row 1: [doc4][crop5]        (T+1 tokens)"]
-    R2["Row 2: [doc6][doc7][doc8]   (T+1 tokens)"]
-    RB["Row B-1: [doc...][crop]     (T+1 tokens)"]
+    R1["Row 1: [doc4][crop5] (T+1 tokens)"]
+    R2["Row 2: [doc6][doc7][doc8] (T+1 tokens)"]
+    RB["Row B-1: [doc...][crop] (T+1 tokens)"]
   end
 
   subgraph Split["Split into inputs & targets"]
-    I["inputs:  row[:T]\nshape: (B, T)"]
+    I["inputs: row[:T]\nshape: (B, T)"]
     T2["targets: row[1:T+1]\nshape: (B, T)"]
   end
 

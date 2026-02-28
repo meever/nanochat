@@ -74,7 +74,7 @@ For reference, the entropy of English text is estimated at ~1.0-1.5 bits per cha
 flowchart TD
   A["Load validation data"] --> B["Tokenize + batch"]
   B --> C["Forward pass\n(get per-token losses)"]
-  C --> D["Map tokens → bytes\n(using token_bytes table)"]
+  C --> D["Map tokens -> bytes\n(using token_bytes table)"]
   D --> E["Sum losses / Sum bytes"]
   E --> F["Divide by ln(2)"]
   F --> G["BPB value"]

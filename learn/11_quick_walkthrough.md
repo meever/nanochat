@@ -177,7 +177,7 @@ flowchart TD
     NORM1 --> ATT["Self-Attention\n+ RoPE positions"]
     ATT --> ADD1["x = x + λ · attn_out\n(residual connection)"]
     ADD1 --> NORM2["RMSNorm"]
-    NORM2 --> MLP["MLP\nLinear → SiLU → Linear"]
+    NORM2 --> MLP["MLP\nLinear -> SiLU -> Linear"]
     MLP --> ADD2["x = x + λ · mlp_out\n(residual connection)"]
     ADD2 --> OUT["Output\n(B, T, d_model)"]
     style ATT fill:#e3f2fd
@@ -311,14 +311,14 @@ After computing the loss scalar, PyTorch traces backward through every operation
 
 ```mermaid
 flowchart RL
-    LOSS["Loss\n(scalar)"] --> LOGITS["∂L/∂logits"]
-    LOGITS --> LM["∂L/∂lm_head weights"]
-    LOGITS --> BLK["∂L/∂block_20 output"]
-    BLK --> ATT["∂L/∂attention weights"]
-    BLK --> MLPW["∂L/∂MLP weights"]
-    ATT --> BLK2["∂L/∂block_19 output"]
+    LOSS["Loss\n(scalar)"] --> LOGITS["dL/dlogits"]
+    LOGITS --> LM["dL/dlm_head weights"]
+    LOGITS --> BLK["dL/dblock_20 output"]
+    BLK --> ATT["dL/dattention weights"]
+    BLK --> MLPW["dL/dMLP weights"]
+    ATT --> BLK2["dL/dblock_19 output"]
     BLK2 --> DOT["...through all 20 blocks..."]
-    DOT --> EMB["∂L/∂embedding weights"]
+    DOT --> EMB["dL/dembedding weights"]
     style LOSS fill:#ffcdd2
     style EMB fill:#e8f5e9
 ```
@@ -351,8 +351,8 @@ flowchart TD
     GRAD["All Gradients"] --> CHECK{"Parameter shape?"}
     CHECK -->|"2D matrix\n(e.g., attention weights)"| MUON["Muon Optimizer\nNewton-Schulz iteration"]
     CHECK -->|"1D vector or embedding"| ADAM["AdamW Optimizer\nmomentum + RMS scaling"]
-    MUON --> UPDATE1["w = w - lr × muon_update"]
-    ADAM --> UPDATE2["w = w - lr × adam_update"]
+    MUON --> UPDATE1["w = w - lr x muon_update"]
+    ADAM --> UPDATE2["w = w - lr x adam_update"]
 ```
 
 For a typical parameter $w$ with gradient $g$:
@@ -394,23 +394,23 @@ Here's everything woven together, with file locations:
 ```mermaid
 sequenceDiagram
     participant TXT as Raw Text
-    participant TOK as Tokenizer<br/>(tokenizer.py)
-    participant DL as DataLoader<br/>(dataloader.py)
-    participant EMB as Embedding<br/>(gpt.py)
-    participant BLK as 20× Transformer<br/>Blocks (gpt.py)
-    participant LMH as LM Head<br/>(gpt.py)
-    participant LOSS as Cross-Entropy<br/>(base_train.py)
-    participant OPT as Optimizer<br/>(optim.py)
+    participant TOK as Tokenizer tokenizer.py
+    participant DL as DataLoader dataloader.py
+    participant EMB as Embedding gpt.py
+    participant BLK as Transformer Blocks gpt.py
+    participant LMH as LM Head gpt.py
+    participant LOSS as Cross Entropy base_train.py
+    participant OPT as Optimizer optim.py
 
-    TXT->>TOK: "The cat sat"
+    TXT->>TOK: The cat sat
     TOK->>DL: [464, 3797, 3290]
     DL->>EMB: packed row (B, T)
     EMB->>BLK: vectors (B, T, 1280)
-    BLK->>BLK: ×20 blocks: attn + MLP
+    BLK->>BLK: Repeat across 20 blocks attn + MLP
     BLK->>LMH: refined vectors (B, T, 1280)
     LMH->>LOSS: logits (B, T, 32768)
     LOSS->>LOSS: compare with targets
-    LOSS-->>OPT: loss.backward() → gradients
+    LOSS-->>OPT: loss.backward to gradients
     OPT-->>EMB: update all weights
     Note over TXT,OPT: Repeat for every batch until training ends
 ```

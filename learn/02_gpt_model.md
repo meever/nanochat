@@ -252,7 +252,7 @@ flowchart LR
   subgraph VE["With Value Embeddings"]
     X2["x"] --> V2["V = xW_V"]
     TokenIDs["Token IDs"] --> VE2["VE = Embed(IDs)"]
-    V2 --> Mix["V + gate × VE"]
+    V2 --> Mix["V + gate x VE"]
     VE2 --> Mix
     Mix --> Out2["Attention output"]
   end
@@ -302,7 +302,7 @@ Let's trace through the complete `forward()` method step by step:
 
 ```mermaid
 flowchart TD
-  A["Token IDs: [42, 1337, 256]\nshape: (B, T)"] --> B["Token Embedding\nwte(idx) → (B, T, 768)"]
+  A["Token IDs: [42, 1337, 256]\nshape: (B, T)"] --> B["Token Embedding\nwte(idx) -> (B, T, 768)"]
   B --> C["RMSNorm\nnorm(x)"]
   C --> D["Save as x0\n(for x0 residual)"]
   D --> E["For each block i:"]
@@ -311,7 +311,7 @@ flowchart TD
   G --> H["Block(x, ve, cos_sin, window)"]
   H --> E
   E --> I["Final RMSNorm"]
-  I --> J["LM Head: Linear(768 → vocab)"]
+  I --> J["LM Head: Linear(768 -> vocab)"]
   J --> K["Softcap: 15·tanh(logits/15)"]
   K --> L["Cross-entropy loss\n(if targets provided)"]
 

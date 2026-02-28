@@ -30,25 +30,25 @@ Here's the complete flow of how raw text becomes a chatbot you can talk to:
 ```mermaid
 flowchart LR
   subgraph Stage1["Stage 1: Data Preparation"]
-    A["📄 Raw text\n(web crawl)"] --> B["🔤 Tokenizer\n(BPE)"]
+    A[" Raw text\n(web crawl)"] --> B[" Tokenizer\n(BPE)"]
     B --> C["🔢 Token IDs\n(integers)"]
   end
 
   subgraph Stage2["Stage 2: Pretraining"]
-    C --> D["🧠 GPT Model\n(next-token prediction)"]
+    C --> D[" GPT Model\n(next-token prediction)"]
     D --> E["📊 Base Evaluation\n(BPB + CORE)"]
   end
 
   subgraph Stage3["Stage 3: Fine-tuning"]
-    D --> F["💬 Chat SFT\n(supervised conversations)"]
+    D --> F[" Chat SFT\n(supervised conversations)"]
     F --> G["📊 Chat Evaluation"]
-    F --> H["🎯 Chat RL\n(reward-based learning)"]
+    F --> H[" Chat RL\n(reward-based learning)"]
     H --> I["📊 Chat Evaluation"]
   end
 
   subgraph Stage4["Stage 4: Deployment"]
-    D --> J["⚡ Inference Engine\n(KV cache)"]
-    J --> K["🖥️ CLI / Web UI"]
+    D --> J[" Inference Engine\n(KV cache)"]
+    J --> K[" CLI / Web UI"]
   end
 ```
 
@@ -76,13 +76,13 @@ Most LLM codebases have dozens of hyperparameters you need to tune. nanochat has
 
 ```mermaid
 flowchart TD
-  D["--depth=N\n(number of layers)"] --> W["Model width\n= depth × 64"]
+  D["--depth=N\n(number of layers)"] --> W["Model width\n= depth x 64"]
   D --> H["Num attention heads\n= width / 128"]
   D --> P["Total parameters\n(computed)"]
-  P --> T["Training tokens\n= 10.5 × params"]
+  P --> T["Training tokens\n= 10.5 x params"]
   T --> B["Batch size\n∝ tokens^0.383"]
   B --> LR["Learning rate\n∝ √(batch / ref)"]
-  B --> WD["Weight decay\n∝ √(batch/ref) × (ref_tokens/tokens)"]
+  B --> WD["Weight decay\n∝ √(batch/ref) x (ref_tokens/tokens)"]
 ```
 
 For example:
@@ -153,12 +153,12 @@ If you're new, follow this path through the code. Each step builds on the previo
 
 ```mermaid
 flowchart TD
-  A["1️⃣ scripts/base_train.py\n(see the overall training flow)"] --> B["2️⃣ nanochat/gpt.py\n(understand the model architecture)"]
-  B --> C["3️⃣ nanochat/tokenizer.py\n(how text becomes numbers)"]
-  C --> D["4️⃣ nanochat/dataloader.py\n(how data is batched)"]
-  D --> E["5️⃣ nanochat/optim.py\n(how the model learns)"]
-  E --> F["6️⃣ nanochat/engine.py\n(how inference works)"]
-  F --> G["7️⃣ scripts/chat_sft.py\n(how chat is taught)"]
+  A["1 scripts/base_train.py\n(see the overall training flow)"] --> B["2 nanochat/gpt.py\n(understand the model architecture)"]
+  B --> C["3 nanochat/tokenizer.py\n(how text becomes numbers)"]
+  C --> D["4 nanochat/dataloader.py\n(how data is batched)"]
+  D --> E["5 nanochat/optim.py\n(how the model learns)"]
+  E --> F["6 nanochat/engine.py\n(how inference works)"]
+  F --> G["7 scripts/chat_sft.py\n(how chat is taught)"]
 ```
 
 > **Tip:** The total codebase is only ~3,500 lines of Python across all files. That's tiny for a complete LLM training framework. You can read it all in an afternoon.

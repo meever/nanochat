@@ -51,10 +51,10 @@ Now count pairs again, find the most frequent, merge. Repeat until you reach the
 
 ```mermaid
 flowchart TD
-  S0["Start: a a a b b c\n(6 bytes)"] --> M1["Merge 'a'+'a' → 'aa'\naa a b b c"]
-  M1 --> M2["Merge 'b'+'b' → 'bb'\naa a bb c"]
-  M2 --> M3["Merge 'aa'+'a' → 'aaa'\naaa bb c"]
-  M3 --> M4["Merge 'bb'+'c' → 'bbc'\naaa bbc"]
+  S0["Start: a a a b b c\n(6 bytes)"] --> M1["Merge 'a'+'a' -> 'aa'\naa a b b c"]
+  M1 --> M2["Merge 'b'+'b' -> 'bb'\naa a bb c"]
+  M2 --> M3["Merge 'aa'+'a' -> 'aaa'\naaa bb c"]
+  M3 --> M4["Merge 'bb'+'c' -> 'bbc'\naaa bbc"]
   M4 --> Done["Final: 2 tokens\n(from original 6 bytes)"]
 ```
 
@@ -145,13 +145,13 @@ When fine-tuning for chat, conversations are structured like this:
 ```mermaid
 flowchart LR
   subgraph Conversation["Multi-turn conversation"]
-    BOS["<|bos|>"]
-    US1["<|user_start|>"]
+    BOS["BOS"]
+    US1["USER_START"]
     U1["What is 2+2?"]
-    UE1["<|user_end|>"]
-    AS1["<|assistant_start|>"]
+    UE1["USER_END"]
+    AS1["ASSISTANT_START"]
     A1["2+2 equals 4."]
-    AE1["<|assistant_end|>"]
+    AE1["ASSISTANT_END"]
   end
 
   BOS --> US1 --> U1 --> UE1 --> AS1 --> A1 --> AE1
@@ -176,9 +176,9 @@ sequenceDiagram
   participant T as Tool (Python)
 
   U->>A: What is 15 * 37?
-  A->>T: <|python_start|>15 * 37<|python_end|>
-  T->>A: <|output_start|>555<|output_end|>
-  A->>U: 15 × 37 = 555.
+  A->>T: PYTHON_START15 * 37PYTHON_END
+  T->>A: OUTPUT_START555OUTPUT_END
+  A->>U: 15 x 37 = 555.
 ```
 
 ---
@@ -191,16 +191,16 @@ A critical detail: during fine-tuning, we **don't** train on user messages or to
 flowchart TD
   subgraph Tokens["Token stream"]
     direction LR
-    B["<|bos|>"]
-    US["<|user_start|>"]
+    B["BOS"]
+    US["USER_START"]
     Q["What is 2+"]
     Q2["2?"]
-    UE["<|user_end|>"]
-    AS["<|assistant_start|>"]
+    UE["USER_END"]
+    AS["ASSISTANT_START"]
     A1["2+2"]
     A2["equals"]
     A3["4."]
-    AE["<|assistant_end|>"]
+    AE["ASSISTANT_END"]
   end
 
   subgraph Mask["Loss mask"]

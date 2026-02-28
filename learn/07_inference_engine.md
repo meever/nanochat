@@ -28,12 +28,12 @@ The Keys and Values of previous tokens **never change** once computed. So we can
 flowchart TD
   subgraph Prefill["Phase 1: Prefill (process entire prompt at once)"]
     P["Prompt: 'The cat sat on the'\n(5 tokens)"] --> FP["Forward pass\ncomputes Q, K, V for all 5 tokens"]
-    FP --> Cache["Store K, V in cache\nfor all 5 tokens × all layers"]
+    FP --> Cache["Store K, V in cache\nfor all 5 tokens x all layers"]
   end
 
   subgraph Decode["Phase 2: Decode (one token at a time)"]
     NT["New token: 'mat'"] --> FD["Forward pass for 1 token only\nCompute Q for 'mat'"]
-    FD --> Lookup["Attention: Q_mat × K_cache\n(look up cached keys)"]
+    FD --> Lookup["Attention: Q_mat x K_cache\n(look up cached keys)"]
     Lookup --> Result["Output: weighted sum of V_cache"]
     Result --> Store["Add K_mat, V_mat to cache"]
     Store --> Sample["Sample next token"]
@@ -106,9 +106,9 @@ flowchart TD
   Loop --> Sample["Sample next token\n(from logits)"]
   Sample --> Check{"Special token?"}
 
-  Check -->|"<python_start>"| Tool["Enter tool mode\ncollect expression tokens"]
-  Check -->|"<python_end>"| Eval["Evaluate expression\nforce-inject result"]
-  Check -->|"<assistant_end> or <bos>"| Done["Mark row complete"]
+  Check -->|"python_start"| Tool["Enter tool mode\ncollect expression tokens"]
+  Check -->|"python_end"| Eval["Evaluate expression\nforce-inject result"]
+  Check -->|"assistant_end or bos"| Done["Mark row complete"]
   Check -->|"Regular token"| Yield["Yield token\nto caller"]
 
   Tool --> Loop
@@ -160,21 +160,21 @@ $$
 
 ```mermaid
 flowchart LR
-  subgraph Low["τ = 0.1 (nearly greedy)"]
+  subgraph Low["tau = 0.1 (nearly greedy)"]
     L1["'mat': 99%"]
     L2["'dog': 0.5%"]
     L3["'car': 0.3%"]
     L4["other: 0.2%"]
   end
 
-  subgraph Mid["τ = 1.0 (standard)"]
+  subgraph Mid["tau = 1.0 (standard)"]
     M1["'mat': 60%"]
     M2["'dog': 15%"]
     M3["'car': 10%"]
     M4["other: 15%"]
   end
 
-  subgraph High["τ = 2.0 (creative)"]
+  subgraph High["tau = 2.0 (creative)"]
     H1["'mat': 30%"]
     H2["'dog': 20%"]
     H3["'car': 18%"]
@@ -208,13 +208,13 @@ nanochat's model can use a Python calculator. When it needs to compute something
 ```mermaid
 stateDiagram-v2
   [*] --> Normal: Start generating
-  Normal --> InPython: Model outputs <python_start>
+  Normal --> InPython: Model outputs python_start
   InPython --> InPython: Collect expression tokens
-  InPython --> EvalExpr: Model outputs <python_end>
+  InPython --> EvalExpr: Model outputs python_end
   EvalExpr --> ForceOutput: Result available
   ForceOutput --> ForceOutput: Force-inject output tokens
-  ForceOutput --> Normal: After <output_end>
-  Normal --> [*]: Model outputs <assistant_end>
+  ForceOutput --> Normal: After output_end
+  Normal --> [*]: Model outputs assistant_end
 ```
 
 ### How it works step by step

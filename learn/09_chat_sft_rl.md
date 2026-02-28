@@ -70,7 +70,7 @@ The conversation is rendered into a flat token stream with special tokens (as we
 ```mermaid
 flowchart TD
   Conv["Conversation:\nUser: What is 2+2?\nAssistant: 4"] --> Render["Render with special tokens"]
-  Render --> Tokens["<bos><user_start>What is 2+2?<user_end><assistant_start>4<assistant_end>"]
+  Render --> Tokens["bosuser_startWhat is 2+2?user_endassistant_start4assistant_end"]
   Tokens --> Mask["Loss mask:\n0 0 0 0 0 0 0 0 0 0 1 1"]
   Mask --> Loss["Loss computed only\non assistant tokens (1s)"]
 ```
@@ -148,7 +148,7 @@ flowchart TD
     Q["1. Sample a math problem\nfrom GSM8K"] --> Gen["2. Generate N=16 candidate\nanswers (using Engine)"]
     Gen --> Grade["3. Grade each answer\n(correct=1, wrong=0)"]
     Grade --> Adv["4. Compute advantages\nA = reward - mean_reward"]
-    Adv --> Loss["5. Policy gradient loss\nL = -Σ log p(token) × A"]
+    Adv --> Loss["5. Policy gradient loss\nL = -Σ log p(token) x A"]
     Loss --> Update["6. Update model weights"]
     Update --> Q
   end
@@ -209,7 +209,7 @@ flowchart LR
   end
 
   subgraph Badge["Each token gets"]
-    B["A = +0.375\n→ make more likely"]
+    B["A = +0.375\n-> make more likely"]
   end
 
   Correct -.-> Badge
@@ -224,10 +224,10 @@ Each task in the SFT mixture teaches different skills:
 ```mermaid
 flowchart TD
   subgraph Skills["Skills Learned"]
-    SmolTalk2["SmolTalk\n→ Conversation flow\n→ General knowledge\n→ Tone & style"]
-    MMLU2["MMLU\n→ Multiple choice format\n→ Academic knowledge\n→ Reasoning"]
-    GSM2["GSM8K\n→ Step-by-step math\n→ Tool use (calculator)\n→ Structured reasoning"]
-    Spell2["Spelling\n→ Letter awareness\n→ Character counting\n→ Precise text manipulation"]
+    SmolTalk2["SmolTalk\n-> Conversation flow\n-> General knowledge\n-> Tone & style"]
+    MMLU2["MMLU\n-> Multiple choice format\n-> Academic knowledge\n-> Reasoning"]
+    GSM2["GSM8K\n-> Step-by-step math\n-> Tool use (calculator)\n-> Structured reasoning"]
+    Spell2["Spelling\n-> Letter awareness\n-> Character counting\n-> Precise text manipulation"]
   end
 ```
 
@@ -281,13 +281,13 @@ gantt
     title Training Timeline
     dateFormat HH:mm
     section Pretraining
-    Base training           :base, 00:00, 3h
+    Base training :base, 00:00, 3h
     section Fine-tuning
-    SFT                     :sft, after base, 10m
-    RL on GSM8K             :rl, after sft, 20m
+    SFT :sft, after base, 10m
+    RL on GSM8K :rl, after sft, 20m
     section Ready
-    Chat evaluation         :eval, after rl, 5m
-    Deploy web UI           :deploy, after eval, 1m
+    Chat evaluation :eval, after rl, 5m
+    Deploy web UI :deploy, after eval, 1m
 ```
 
 Total time: ~3.5 hours from zero to a working chatbot.

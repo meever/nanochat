@@ -135,7 +135,7 @@ flowchart TD
   H2 --> Cat
   H3 --> Cat
   H4 --> Cat
-  Cat --> Proj["Project back\n(W_O: 768→768)"]
+  Cat --> Proj["Project back\n(W_O: 768->768)"]
   Proj --> Out["Output (d=768)"]
 ```
 
@@ -240,16 +240,16 @@ A GPT model is just many Transformer blocks stacked on top of each other, with a
 
 ```mermaid
 flowchart TD
-  Tokens["Token IDs\n[15496, 995, 764]"] --> Embed["Token Embedding\n(lookup table: ID → vector)"]
+  Tokens["Token IDs\n[15496, 995, 764]"] --> Embed["Token Embedding\n(lookup table: ID -> vector)"]
   Embed --> Norm0["RMSNorm"]
   Norm0 --> B0["Block 0\n(Attention + MLP)"]
   B0 --> B1["Block 1\n(Attention + MLP)"]
   B1 --> Dots["⋮\n(N-2 more blocks)"]
   Dots --> BN["Block N-1\n(Attention + MLP)"]
   BN --> NormF["Final RMSNorm"]
-  NormF --> LMHead["LM Head\n(linear: d → vocab_size)"]
+  NormF --> LMHead["LM Head\n(linear: d -> vocab_size)"]
   LMHead --> Logits["Logits\n(score for each possible next token)"]
-  Logits --> Softmax["Softmax → Probabilities"]
+  Logits --> Softmax["Softmax -> Probabilities"]
 ```
 
 The number of blocks ($N$) is the **depth** — the one dial that controls the whole model in nanochat.

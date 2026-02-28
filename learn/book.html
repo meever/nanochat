@@ -143,25 +143,25 @@ Here's the complete flow of how raw text becomes a chatbot you can talk to:
 ```mermaid
 flowchart LR
   subgraph Stage1["Stage 1: Data Preparation"]
-    A["📄 Raw text\n(web crawl)"] --> B["🔤 Tokenizer\n(BPE)"]
+    A[" Raw text\n(web crawl)"] --> B[" Tokenizer\n(BPE)"]
     B --> C["🔢 Token IDs\n(integers)"]
   end
 
   subgraph Stage2["Stage 2: Pretraining"]
-    C --> D["🧠 GPT Model\n(next-token prediction)"]
+    C --> D[" GPT Model\n(next-token prediction)"]
     D --> E["📊 Base Evaluation\n(BPB + CORE)"]
   end
 
   subgraph Stage3["Stage 3: Fine-tuning"]
-    D --> F["💬 Chat SFT\n(supervised conversations)"]
+    D --> F[" Chat SFT\n(supervised conversations)"]
     F --> G["📊 Chat Evaluation"]
-    F --> H["🎯 Chat RL\n(reward-based learning)"]
+    F --> H[" Chat RL\n(reward-based learning)"]
     H --> I["📊 Chat Evaluation"]
   end
 
   subgraph Stage4["Stage 4: Deployment"]
-    D --> J["⚡ Inference Engine\n(KV cache)"]
-    J --> K["🖥️ CLI / Web UI"]
+    D --> J[" Inference Engine\n(KV cache)"]
+    J --> K[" CLI / Web UI"]
   end
 ```
 
@@ -189,13 +189,13 @@ Most LLM codebases have dozens of hyperparameters you need to tune. nanochat has
 
 ```mermaid
 flowchart TD
-  D["--depth=N\n(number of layers)"] --> W["Model width\n= depth × 64"]
+  D["--depth=N\n(number of layers)"] --> W["Model width\n= depth x 64"]
   D --> H["Num attention heads\n= width / 128"]
   D --> P["Total parameters\n(computed)"]
-  P --> T["Training tokens\n= 10.5 × params"]
+  P --> T["Training tokens\n= 10.5 x params"]
   T --> B["Batch size\n∝ tokens^0.383"]
   B --> LR["Learning rate\n∝ √(batch / ref)"]
-  B --> WD["Weight decay\n∝ √(batch/ref) × (ref_tokens/tokens)"]
+  B --> WD["Weight decay\n∝ √(batch/ref) x (ref_tokens/tokens)"]
 ```
 
 For example:
@@ -266,12 +266,12 @@ If you're new, follow this path through the code. Each step builds on the previo
 
 ```mermaid
 flowchart TD
-  A["1️⃣ scripts/base_train.py\n(see the overall training flow)"] --> B["2️⃣ nanochat/gpt.py\n(understand the model architecture)"]
-  B --> C["3️⃣ nanochat/tokenizer.py\n(how text becomes numbers)"]
-  C --> D["4️⃣ nanochat/dataloader.py\n(how data is batched)"]
-  D --> E["5️⃣ nanochat/optim.py\n(how the model learns)"]
-  E --> F["6️⃣ nanochat/engine.py\n(how inference works)"]
-  F --> G["7️⃣ scripts/chat_sft.py\n(how chat is taught)"]
+  A["1 scripts/base_train.py\n(see the overall training flow)"] --> B["2 nanochat/gpt.py\n(understand the model architecture)"]
+  B --> C["3 nanochat/tokenizer.py\n(how text becomes numbers)"]
+  C --> D["4 nanochat/dataloader.py\n(how data is batched)"]
+  D --> E["5 nanochat/optim.py\n(how the model learns)"]
+  E --> F["6 nanochat/engine.py\n(how inference works)"]
+  F --> G["7 scripts/chat_sft.py\n(how chat is taught)"]
 ```
 
 > **Tip:** The total codebase is only ~3,500 lines of Python across all files. That's tiny for a complete LLM training framework. You can read it all in an afternoon.
@@ -459,7 +459,7 @@ flowchart TD
   H2 --> Cat
   H3 --> Cat
   H4 --> Cat
-  Cat --> Proj["Project back\n(W_O: 768→768)"]
+  Cat --> Proj["Project back\n(W_O: 768->768)"]
   Proj --> Out["Output (d=768)"]
 ```
 
@@ -564,16 +564,16 @@ A GPT model is just many Transformer blocks stacked on top of each other, with a
 
 ```mermaid
 flowchart TD
-  Tokens["Token IDs\n[15496, 995, 764]"] --> Embed["Token Embedding\n(lookup table: ID → vector)"]
+  Tokens["Token IDs\n[15496, 995, 764]"] --> Embed["Token Embedding\n(lookup table: ID -> vector)"]
   Embed --> Norm0["RMSNorm"]
   Norm0 --> B0["Block 0\n(Attention + MLP)"]
   B0 --> B1["Block 1\n(Attention + MLP)"]
   B1 --> Dots["⋮\n(N-2 more blocks)"]
   Dots --> BN["Block N-1\n(Attention + MLP)"]
   BN --> NormF["Final RMSNorm"]
-  NormF --> LMHead["LM Head\n(linear: d → vocab_size)"]
+  NormF --> LMHead["LM Head\n(linear: d -> vocab_size)"]
   LMHead --> Logits["Logits\n(score for each possible next token)"]
-  Logits --> Softmax["Softmax → Probabilities"]
+  Logits --> Softmax["Softmax -> Probabilities"]
 ```
 
 The number of blocks ($N$) is the **depth** — the one dial that controls the whole model in nanochat.
@@ -884,7 +884,7 @@ flowchart LR
   subgraph VE["With Value Embeddings"]
     X2["x"] --> V2["V = xW_V"]
     TokenIDs["Token IDs"] --> VE2["VE = Embed(IDs)"]
-    V2 --> Mix["V + gate × VE"]
+    V2 --> Mix["V + gate x VE"]
     VE2 --> Mix
     Mix --> Out2["Attention output"]
   end
@@ -934,7 +934,7 @@ Let's trace through the complete `forward()` method step by step:
 
 ```mermaid
 flowchart TD
-  A["Token IDs: [42, 1337, 256]\nshape: (B, T)"] --> B["Token Embedding\nwte(idx) → (B, T, 768)"]
+  A["Token IDs: [42, 1337, 256]\nshape: (B, T)"] --> B["Token Embedding\nwte(idx) -> (B, T, 768)"]
   B --> C["RMSNorm\nnorm(x)"]
   C --> D["Save as x0\n(for x0 residual)"]
   D --> E["For each block i:"]
@@ -943,7 +943,7 @@ flowchart TD
   G --> H["Block(x, ve, cos_sin, window)"]
   H --> E
   E --> I["Final RMSNorm"]
-  I --> J["LM Head: Linear(768 → vocab)"]
+  I --> J["LM Head: Linear(768 -> vocab)"]
   J --> K["Softcap: 15·tanh(logits/15)"]
   K --> L["Cross-entropy loss\n(if targets provided)"]
 
@@ -1113,10 +1113,10 @@ Now count pairs again, find the most frequent, merge. Repeat until you reach the
 
 ```mermaid
 flowchart TD
-  S0["Start: a a a b b c\n(6 bytes)"] --> M1["Merge 'a'+'a' → 'aa'\naa a b b c"]
-  M1 --> M2["Merge 'b'+'b' → 'bb'\naa a bb c"]
-  M2 --> M3["Merge 'aa'+'a' → 'aaa'\naaa bb c"]
-  M3 --> M4["Merge 'bb'+'c' → 'bbc'\naaa bbc"]
+  S0["Start: a a a b b c\n(6 bytes)"] --> M1["Merge 'a'+'a' -> 'aa'\naa a b b c"]
+  M1 --> M2["Merge 'b'+'b' -> 'bb'\naa a bb c"]
+  M2 --> M3["Merge 'aa'+'a' -> 'aaa'\naaa bb c"]
+  M3 --> M4["Merge 'bb'+'c' -> 'bbc'\naaa bbc"]
   M4 --> Done["Final: 2 tokens\n(from original 6 bytes)"]
 ```
 
@@ -1207,13 +1207,13 @@ When fine-tuning for chat, conversations are structured like this:
 ```mermaid
 flowchart LR
   subgraph Conversation["Multi-turn conversation"]
-    BOS["<|bos|>"]
-    US1["<|user_start|>"]
+    BOS["BOS"]
+    US1["USER_START"]
     U1["What is 2+2?"]
-    UE1["<|user_end|>"]
-    AS1["<|assistant_start|>"]
+    UE1["USER_END"]
+    AS1["ASSISTANT_START"]
     A1["2+2 equals 4."]
-    AE1["<|assistant_end|>"]
+    AE1["ASSISTANT_END"]
   end
 
   BOS --> US1 --> U1 --> UE1 --> AS1 --> A1 --> AE1
@@ -1238,9 +1238,9 @@ sequenceDiagram
   participant T as Tool (Python)
 
   U->>A: What is 15 * 37?
-  A->>T: <|python_start|>15 * 37<|python_end|>
-  T->>A: <|output_start|>555<|output_end|>
-  A->>U: 15 × 37 = 555.
+  A->>T: PYTHON_START15 * 37PYTHON_END
+  T->>A: OUTPUT_START555OUTPUT_END
+  A->>U: 15 x 37 = 555.
 ```
 
 ---
@@ -1253,16 +1253,16 @@ A critical detail: during fine-tuning, we **don't** train on user messages or to
 flowchart TD
   subgraph Tokens["Token stream"]
     direction LR
-    B["<|bos|>"]
-    US["<|user_start|>"]
+    B["BOS"]
+    US["USER_START"]
     Q["What is 2+"]
     Q2["2?"]
-    UE["<|user_end|>"]
-    AS["<|assistant_start|>"]
+    UE["USER_END"]
+    AS["ASSISTANT_START"]
     A1["2+2"]
     A2["equals"]
     A3["4."]
-    AE["<|assistant_end|>"]
+    AE["ASSISTANT_END"]
   end
 
   subgraph Mask["Loss mask"]
@@ -1549,13 +1549,13 @@ Once $B$ rows are packed, they become the training batch:
 flowchart TD
   subgraph Packing["Pack B rows"]
     R0["Row 0: [doc1][doc2][crop3] (T+1 tokens)"]
-    R1["Row 1: [doc4][crop5]        (T+1 tokens)"]
-    R2["Row 2: [doc6][doc7][doc8]   (T+1 tokens)"]
-    RB["Row B-1: [doc...][crop]     (T+1 tokens)"]
+    R1["Row 1: [doc4][crop5] (T+1 tokens)"]
+    R2["Row 2: [doc6][doc7][doc8] (T+1 tokens)"]
+    RB["Row B-1: [doc...][crop] (T+1 tokens)"]
   end
 
   subgraph Split["Split into inputs & targets"]
-    I["inputs:  row[:T]\nshape: (B, T)"]
+    I["inputs: row[:T]\nshape: (B, T)"]
     T2["targets: row[1:T+1]\nshape: (B, T)"]
   end
 
@@ -1695,13 +1695,13 @@ Everything is a chain of calculations starting from depth:
 
 ```mermaid
 flowchart TD
-  Depth["--depth=N\n(user provides)"] --> Width["Width = N × 64\n(model dimension)"]
+  Depth["--depth=N\n(user provides)"] --> Width["Width = N x 64\n(model dimension)"]
   Width --> Heads["Heads = Width / 128\n(number of attention heads)"]
   Depth --> Params["Count parameters\n(from model structure)"]
-  Params --> Tokens["Training tokens\n= 10.5 × scaling_params"]
+  Params --> Tokens["Training tokens\n= 10.5 x scaling_params"]
   Tokens --> Batch["Optimal batch size\nB ∝ T^0.383"]
   Batch --> LR["Learning rate\nη ∝ √(B/B_ref)"]
-  Batch --> WD["Weight decay\nλ ∝ √(B/B_ref) × (D_ref/D)"]
+  Batch --> WD["Weight decay\nλ ∝ √(B/B_ref) x (D_ref/D)"]
   Tokens --> Iters["Num iterations\n= tokens / batch_size"]
 
   style Depth fill:#bbdefb,stroke:#1565c0
@@ -1762,9 +1762,9 @@ nanochat uses a three-phase learning rate schedule:
 flowchart LR
   subgraph Schedule["Learning Rate over Training"]
     direction LR
-    W["Warmup\n(0 → η)"]
+    W["Warmup\n(0 -> η)"]
     C["Constant\n(hold at η)"]
-    D["Warmdown\n(η → 0)"]
+    D["Warmdown\n(η -> 0)"]
   end
 
   W --> C --> D
@@ -1840,10 +1840,10 @@ Each micro-batch does a forward + backward pass, accumulating gradients. Only af
 ```mermaid
 flowchart LR
   subgraph Micro["Total batch = 4 micro-batches"]
-    M1["μ-batch 1\n(forward + backward)"]
-    M2["μ-batch 2\n(forward + backward)"]
-    M3["μ-batch 3\n(forward + backward)"]
-    M4["μ-batch 4\n(forward + backward)"]
+    M1["mu-batch 1\n(forward + backward)"]
+    M2["mu-batch 2\n(forward + backward)"]
+    M3["mu-batch 3\n(forward + backward)"]
+    M4["mu-batch 4\n(forward + backward)"]
   end
 
   Micro --> Sum["Accumulated\ngradients"]
@@ -2021,10 +2021,10 @@ $$
 
 ```mermaid
 flowchart TD
-  G["Gradient g_t"] --> M["Update momentum\nm = β₁·m + (1-β₁)·g"]
-  G --> V["Update variance\nv = β₂·v + (1-β₂)·g²"]
-  M --> BC["Bias correction\nm̂ = m/(1-β₁ᵗ)"]
-  V --> BC2["Bias correction\nv̂ = v/(1-β₂ᵗ)"]
+  G["Gradient g_t"] --> M["Update momentum\nm = beta₁·m + (1-beta₁)·g"]
+  G --> V["Update variance\nv = beta₂·v + (1-beta₂)·g²"]
+  M --> BC["Bias correction\nm̂ = m/(1-beta₁ᵗ)"]
+  V --> BC2["Bias correction\nv̂ = v/(1-beta₂ᵗ)"]
   BC --> Update["θ = θ - η·(m̂/√(v̂+ε) + λ·θ)"]
   BC2 --> Update
 
@@ -2089,7 +2089,7 @@ This is related to the matrix polar decomposition, which projects $G$ onto the s
 
 ```mermaid
 flowchart TD
-  G["Raw gradient G\n(same shape as weight matrix)"] --> Mom["1. Momentum\nG_smooth = β·G_smooth + (1-β)·G"]
+  G["Raw gradient G\n(same shape as weight matrix)"] --> Mom["1. Momentum\nG_smooth = beta·G_smooth + (1-beta)·G"]
   Mom --> PE["2. Polar Express\nOrthogonalize G_smooth\n(5 iterations)"]
   PE --> NM["3. NorMuon variance reduction\nNormalize per-neuron scales"]
   NM --> WD["4. Weight decay\nθ = (1-λ)·θ"]
@@ -2257,12 +2257,12 @@ The Keys and Values of previous tokens **never change** once computed. So we can
 flowchart TD
   subgraph Prefill["Phase 1: Prefill (process entire prompt at once)"]
     P["Prompt: 'The cat sat on the'\n(5 tokens)"] --> FP["Forward pass\ncomputes Q, K, V for all 5 tokens"]
-    FP --> Cache["Store K, V in cache\nfor all 5 tokens × all layers"]
+    FP --> Cache["Store K, V in cache\nfor all 5 tokens x all layers"]
   end
 
   subgraph Decode["Phase 2: Decode (one token at a time)"]
     NT["New token: 'mat'"] --> FD["Forward pass for 1 token only\nCompute Q for 'mat'"]
-    FD --> Lookup["Attention: Q_mat × K_cache\n(look up cached keys)"]
+    FD --> Lookup["Attention: Q_mat x K_cache\n(look up cached keys)"]
     Lookup --> Result["Output: weighted sum of V_cache"]
     Result --> Store["Add K_mat, V_mat to cache"]
     Store --> Sample["Sample next token"]
@@ -2335,9 +2335,9 @@ flowchart TD
   Loop --> Sample["Sample next token\n(from logits)"]
   Sample --> Check{"Special token?"}
 
-  Check -->|"<python_start>"| Tool["Enter tool mode\ncollect expression tokens"]
-  Check -->|"<python_end>"| Eval["Evaluate expression\nforce-inject result"]
-  Check -->|"<assistant_end> or <bos>"| Done["Mark row complete"]
+  Check -->|"python_start"| Tool["Enter tool mode\ncollect expression tokens"]
+  Check -->|"python_end"| Eval["Evaluate expression\nforce-inject result"]
+  Check -->|"assistant_end or bos"| Done["Mark row complete"]
   Check -->|"Regular token"| Yield["Yield token\nto caller"]
 
   Tool --> Loop
@@ -2389,21 +2389,21 @@ $$
 
 ```mermaid
 flowchart LR
-  subgraph Low["τ = 0.1 (nearly greedy)"]
+  subgraph Low["tau = 0.1 (nearly greedy)"]
     L1["'mat': 99%"]
     L2["'dog': 0.5%"]
     L3["'car': 0.3%"]
     L4["other: 0.2%"]
   end
 
-  subgraph Mid["τ = 1.0 (standard)"]
+  subgraph Mid["tau = 1.0 (standard)"]
     M1["'mat': 60%"]
     M2["'dog': 15%"]
     M3["'car': 10%"]
     M4["other: 15%"]
   end
 
-  subgraph High["τ = 2.0 (creative)"]
+  subgraph High["tau = 2.0 (creative)"]
     H1["'mat': 30%"]
     H2["'dog': 20%"]
     H3["'car': 18%"]
@@ -2437,13 +2437,13 @@ nanochat's model can use a Python calculator. When it needs to compute something
 ```mermaid
 stateDiagram-v2
   [*] --> Normal: Start generating
-  Normal --> InPython: Model outputs <python_start>
+  Normal --> InPython: Model outputs python_start
   InPython --> InPython: Collect expression tokens
-  InPython --> EvalExpr: Model outputs <python_end>
+  InPython --> EvalExpr: Model outputs python_end
   EvalExpr --> ForceOutput: Result available
   ForceOutput --> ForceOutput: Force-inject output tokens
-  ForceOutput --> Normal: After <output_end>
-  Normal --> [*]: Model outputs <assistant_end>
+  ForceOutput --> Normal: After output_end
+  Normal --> [*]: Model outputs assistant_end
 ```
 
 ### How it works step by step
@@ -2614,7 +2614,7 @@ For reference, the entropy of English text is estimated at ~1.0-1.5 bits per cha
 flowchart TD
   A["Load validation data"] --> B["Tokenize + batch"]
   B --> C["Forward pass\n(get per-token losses)"]
-  C --> D["Map tokens → bytes\n(using token_bytes table)"]
+  C --> D["Map tokens -> bytes\n(using token_bytes table)"]
   D --> E["Sum losses / Sum bytes"]
   E --> F["Divide by ln(2)"]
   F --> G["BPB value"]
@@ -2859,7 +2859,7 @@ The conversation is rendered into a flat token stream with special tokens (as we
 ```mermaid
 flowchart TD
   Conv["Conversation:\nUser: What is 2+2?\nAssistant: 4"] --> Render["Render with special tokens"]
-  Render --> Tokens["<bos><user_start>What is 2+2?<user_end><assistant_start>4<assistant_end>"]
+  Render --> Tokens["bosuser_startWhat is 2+2?user_endassistant_start4assistant_end"]
   Tokens --> Mask["Loss mask:\n0 0 0 0 0 0 0 0 0 0 1 1"]
   Mask --> Loss["Loss computed only\non assistant tokens (1s)"]
 ```
@@ -2937,7 +2937,7 @@ flowchart TD
     Q["1. Sample a math problem\nfrom GSM8K"] --> Gen["2. Generate N=16 candidate\nanswers (using Engine)"]
     Gen --> Grade["3. Grade each answer\n(correct=1, wrong=0)"]
     Grade --> Adv["4. Compute advantages\nA = reward - mean_reward"]
-    Adv --> Loss["5. Policy gradient loss\nL = -Σ log p(token) × A"]
+    Adv --> Loss["5. Policy gradient loss\nL = -Σ log p(token) x A"]
     Loss --> Update["6. Update model weights"]
     Update --> Q
   end
@@ -2998,7 +2998,7 @@ flowchart LR
   end
 
   subgraph Badge["Each token gets"]
-    B["A = +0.375\n→ make more likely"]
+    B["A = +0.375\n-> make more likely"]
   end
 
   Correct -.-> Badge
@@ -3013,10 +3013,10 @@ Each task in the SFT mixture teaches different skills:
 ```mermaid
 flowchart TD
   subgraph Skills["Skills Learned"]
-    SmolTalk2["SmolTalk\n→ Conversation flow\n→ General knowledge\n→ Tone & style"]
-    MMLU2["MMLU\n→ Multiple choice format\n→ Academic knowledge\n→ Reasoning"]
-    GSM2["GSM8K\n→ Step-by-step math\n→ Tool use (calculator)\n→ Structured reasoning"]
-    Spell2["Spelling\n→ Letter awareness\n→ Character counting\n→ Precise text manipulation"]
+    SmolTalk2["SmolTalk\n-> Conversation flow\n-> General knowledge\n-> Tone & style"]
+    MMLU2["MMLU\n-> Multiple choice format\n-> Academic knowledge\n-> Reasoning"]
+    GSM2["GSM8K\n-> Step-by-step math\n-> Tool use (calculator)\n-> Structured reasoning"]
+    Spell2["Spelling\n-> Letter awareness\n-> Character counting\n-> Precise text manipulation"]
   end
 ```
 
@@ -3070,13 +3070,13 @@ gantt
     title Training Timeline
     dateFormat HH:mm
     section Pretraining
-    Base training           :base, 00:00, 3h
+    Base training :base, 00:00, 3h
     section Fine-tuning
-    SFT                     :sft, after base, 10m
-    RL on GSM8K             :rl, after sft, 20m
+    SFT :sft, after base, 10m
+    RL on GSM8K :rl, after sft, 20m
     section Ready
-    Chat evaluation         :eval, after rl, 5m
-    Deploy web UI           :deploy, after eval, 1m
+    Chat evaluation :eval, after rl, 5m
+    Deploy web UI :deploy, after eval, 1m
 ```
 
 Total time: ~3.5 hours from zero to a working chatbot.
@@ -3774,7 +3774,7 @@ flowchart TD
     NORM1 --> ATT["Self-Attention\n+ RoPE positions"]
     ATT --> ADD1["x = x + λ · attn_out\n(residual connection)"]
     ADD1 --> NORM2["RMSNorm"]
-    NORM2 --> MLP["MLP\nLinear → SiLU → Linear"]
+    NORM2 --> MLP["MLP\nLinear -> SiLU -> Linear"]
     MLP --> ADD2["x = x + λ · mlp_out\n(residual connection)"]
     ADD2 --> OUT["Output\n(B, T, d_model)"]
     style ATT fill:#e3f2fd
@@ -3908,14 +3908,14 @@ After computing the loss scalar, PyTorch traces backward through every operation
 
 ```mermaid
 flowchart RL
-    LOSS["Loss\n(scalar)"] --> LOGITS["∂L/∂logits"]
-    LOGITS --> LM["∂L/∂lm_head weights"]
-    LOGITS --> BLK["∂L/∂block_20 output"]
-    BLK --> ATT["∂L/∂attention weights"]
-    BLK --> MLPW["∂L/∂MLP weights"]
-    ATT --> BLK2["∂L/∂block_19 output"]
+    LOSS["Loss\n(scalar)"] --> LOGITS["dL/dlogits"]
+    LOGITS --> LM["dL/dlm_head weights"]
+    LOGITS --> BLK["dL/dblock_20 output"]
+    BLK --> ATT["dL/dattention weights"]
+    BLK --> MLPW["dL/dMLP weights"]
+    ATT --> BLK2["dL/dblock_19 output"]
     BLK2 --> DOT["...through all 20 blocks..."]
-    DOT --> EMB["∂L/∂embedding weights"]
+    DOT --> EMB["dL/dembedding weights"]
     style LOSS fill:#ffcdd2
     style EMB fill:#e8f5e9
 ```
@@ -3948,8 +3948,8 @@ flowchart TD
     GRAD["All Gradients"] --> CHECK{"Parameter shape?"}
     CHECK -->|"2D matrix\n(e.g., attention weights)"| MUON["Muon Optimizer\nNewton-Schulz iteration"]
     CHECK -->|"1D vector or embedding"| ADAM["AdamW Optimizer\nmomentum + RMS scaling"]
-    MUON --> UPDATE1["w = w - lr × muon_update"]
-    ADAM --> UPDATE2["w = w - lr × adam_update"]
+    MUON --> UPDATE1["w = w - lr x muon_update"]
+    ADAM --> UPDATE2["w = w - lr x adam_update"]
 ```
 
 For a typical parameter $w$ with gradient $g$:
@@ -3991,23 +3991,23 @@ Here's everything woven together, with file locations:
 ```mermaid
 sequenceDiagram
     participant TXT as Raw Text
-    participant TOK as Tokenizer<br/>(tokenizer.py)
-    participant DL as DataLoader<br/>(dataloader.py)
-    participant EMB as Embedding<br/>(gpt.py)
-    participant BLK as 20× Transformer<br/>Blocks (gpt.py)
-    participant LMH as LM Head<br/>(gpt.py)
-    participant LOSS as Cross-Entropy<br/>(base_train.py)
-    participant OPT as Optimizer<br/>(optim.py)
+    participant TOK as Tokenizer tokenizer.py
+    participant DL as DataLoader dataloader.py
+    participant EMB as Embedding gpt.py
+    participant BLK as Transformer Blocks gpt.py
+    participant LMH as LM Head gpt.py
+    participant LOSS as Cross Entropy base_train.py
+    participant OPT as Optimizer optim.py
 
-    TXT->>TOK: "The cat sat"
+    TXT->>TOK: The cat sat
     TOK->>DL: [464, 3797, 3290]
     DL->>EMB: packed row (B, T)
     EMB->>BLK: vectors (B, T, 1280)
-    BLK->>BLK: ×20 blocks: attn + MLP
+    BLK->>BLK: Repeat across 20 blocks attn + MLP
     BLK->>LMH: refined vectors (B, T, 1280)
     LMH->>LOSS: logits (B, T, 32768)
     LOSS->>LOSS: compare with targets
-    LOSS-->>OPT: loss.backward() → gradients
+    LOSS-->>OPT: loss.backward to gradients
     OPT-->>EMB: update all weights
     Note over TXT,OPT: Repeat for every batch until training ends
 ```

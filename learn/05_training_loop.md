@@ -66,13 +66,13 @@ Everything is a chain of calculations starting from depth:
 
 ```mermaid
 flowchart TD
-  Depth["--depth=N\n(user provides)"] --> Width["Width = N × 64\n(model dimension)"]
+  Depth["--depth=N\n(user provides)"] --> Width["Width = N x 64\n(model dimension)"]
   Width --> Heads["Heads = Width / 128\n(number of attention heads)"]
   Depth --> Params["Count parameters\n(from model structure)"]
-  Params --> Tokens["Training tokens\n= 10.5 × scaling_params"]
+  Params --> Tokens["Training tokens\n= 10.5 x scaling_params"]
   Tokens --> Batch["Optimal batch size\nB ∝ T^0.383"]
   Batch --> LR["Learning rate\nη ∝ √(B/B_ref)"]
-  Batch --> WD["Weight decay\nλ ∝ √(B/B_ref) × (D_ref/D)"]
+  Batch --> WD["Weight decay\nλ ∝ √(B/B_ref) x (D_ref/D)"]
   Tokens --> Iters["Num iterations\n= tokens / batch_size"]
 
   style Depth fill:#bbdefb,stroke:#1565c0
@@ -133,9 +133,9 @@ nanochat uses a three-phase learning rate schedule:
 flowchart LR
   subgraph Schedule["Learning Rate over Training"]
     direction LR
-    W["Warmup\n(0 → η)"]
+    W["Warmup\n(0 -> η)"]
     C["Constant\n(hold at η)"]
-    D["Warmdown\n(η → 0)"]
+    D["Warmdown\n(η -> 0)"]
   end
 
   W --> C --> D
@@ -211,10 +211,10 @@ Each micro-batch does a forward + backward pass, accumulating gradients. Only af
 ```mermaid
 flowchart LR
   subgraph Micro["Total batch = 4 micro-batches"]
-    M1["μ-batch 1\n(forward + backward)"]
-    M2["μ-batch 2\n(forward + backward)"]
-    M3["μ-batch 3\n(forward + backward)"]
-    M4["μ-batch 4\n(forward + backward)"]
+    M1["mu-batch 1\n(forward + backward)"]
+    M2["mu-batch 2\n(forward + backward)"]
+    M3["mu-batch 3\n(forward + backward)"]
+    M4["mu-batch 4\n(forward + backward)"]
   end
 
   Micro --> Sum["Accumulated\ngradients"]
